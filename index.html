@@ -101,6 +101,36 @@ input.inTestClass,textarea.inTestClass{box-shadow:0 0 2px rgba(0,0,0,0.3) inset,
 </style>
 <!--验证表单代码-->
 <script>
+  //添加事件
+  function addEvent(o,e,fn){
+    if(window.attachEvent){o.attachEvent("on"+e,fn)}
+    else if(window.addEventListener){o.addEventListener(e,fn,false);}
+    else {o["on"+e]=fn;}
+
+  }
+  //解绑事件
+  function removeEvent(o,e,fn){
+    if(window.detacEvent){o.detacEvent("on"+e,fn);}
+    else if(removeEventListener){o.removeEventListener(e,fn,false);}
+    else {o["on"+e]=null;}
+  }
+  //解除默认事件
+  function stopDefault(e){
+    if(e&&e.preventDefault){e.preventDefault();}
+    else {window.event.returnValue=false}
+    return false;
+  }
+  //阻止冒泡
+  function stopBubble(e){
+    if(e&&e.stopPropagation){e.stopPropagation;}
+    else (window.event.cancelBubble=true)
+  }
+  //选择器
+  function geID(el){
+    return document.getElementById(el);
+  }
+
+
   window.onload=function()
     {
       var typeData=document.getElementsByTagName("input");
@@ -109,6 +139,7 @@ input.inTestClass,textarea.inTestClass{box-shadow:0 0 2px rgba(0,0,0,0.3) inset,
           var data=typeData[i].value;
           validataForm(data,type)}
     }
+    
 
     function validataForm(value,type)
     { 
