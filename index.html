@@ -28,7 +28,7 @@ input[type=text]:focus,input[type=password]:focus,textarea:focus{/*border-color:
 </head>
 <body>
 
-<form name="theForm" id="theForm" action="" method="get">
+<form name="theForm" id="theForm" onsubmit="alert('ss')">
  <h2>表单验证示例</h2>
  <table align="center" width="100%">
  <tr>
@@ -46,20 +46,20 @@ input[type=text]:focus,input[type=password]:focus,textarea:focus{/*border-color:
   <td>密码：</td><td><input name="password" type="text" dataType="password" /></td>
  </tr>
  <tr>
-  <td>重复：</td><td><input name="password2" type="text" dataType="Compare-[=password'密码]" /></td>
+  <td>重复：</td><td><input name="password2" type="text" dataType="Compare-[=password]" /></td>
  </tr>
  <tr>
   <td>信箱：</td><td><input type="text" name="email" dataType="email-[1,]" /></td>
  </tr>
  <tr>
-  <td>信箱：</td><td><input type="text" name="email2" dataType="email Compare-[=email'信箱]"  value="aake@qq.com"/></td>
+  <td>信箱：</td><td><input type="text" name="email2" dataType="Compare-[=email]"  value="aake@qq.com"/></td>
  </tr>
  <tr>
   <td>邮编：</td><td><input type="text" name="QQ" dataType="number-[100000,999999]" /></td>
  </tr>
  <tr>
   <td>日期：</td><td><input type="text" name="date" dataType="date" />
-  <input type="text" name="date2" dataType="Compare-[>date'起始日期,date]" />
+  <input type="text" name="date2" dataType="Compare-[date'起始日期,date]" />
   </td>
  </tr>
  <tr>
@@ -81,7 +81,7 @@ input[type=text]:focus,input[type=password]:focus,textarea:focus{/*border-color:
   </td>
  </tr>
  <tr>
-  <td colspan="2"><input name="Submit" type="submit" value="确定提交"></td>
+  <td colspan="2"><input name="Submit" type="submit" value="确定提交" ></td>
  </tr>
  </table>
 </form>
@@ -101,6 +101,7 @@ input.inTestClass,textarea.inTestClass{box-shadow:0 0 2px rgba(0,0,0,0.3) inset,
 </style>
 <!--验证表单代码-->
 <script>
+
   //添加事件
   function addEvent(o,e,fn){
     if(window.attachEvent){o.attachEvent("on"+e,fn)}
@@ -108,31 +109,35 @@ input.inTestClass,textarea.inTestClass{box-shadow:0 0 2px rgba(0,0,0,0.3) inset,
     else {o["on"+e]=fn;}
 
   }
+
+
   //解绑事件
   function removeEvent(o,e,fn){
     if(window.detacEvent){o.detacEvent("on"+e,fn);}
     else if(removeEventListener){o.removeEventListener(e,fn,false);}
     else {o["on"+e]=null;}
   }
-  //解除默认事件
+    //解除默认事件
   function stopDefault(e){
     if(e&&e.preventDefault){e.preventDefault();}
     else {window.event.returnValue=false}
     return false;
   }
+  
   //阻止冒泡
   function stopBubble(e){
     if(e&&e.stopPropagation){e.stopPropagation;}
     else (window.event.cancelBubble=true)
   }
   //选择器
-  function geID(el){
+  function getID(el){
     return document.getElementById(el);
   }
 
 
   window.onload=function()
-    {
+    { 
+      
       var typeData=document.getElementsByTagName("input");
       for(var i=0;i<typeData.length;i++)
         { var type=typeData[i].getAttribute('dataType').split("-",1);
@@ -146,15 +151,26 @@ input.inTestClass,textarea.inTestClass{box-shadow:0 0 2px rgba(0,0,0,0.3) inset,
       
       var dataVali=
       {"email":{"vali":/^(\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*)?$/,"error":"Email地址填写错误"},
-       "tel":{"vali":/^((0?1[358]\d{9})[,，]?|((0(10|2[0-9]{1}|[3-9]{1}\d{2})[-_－—]?)?\d{7,8})[,，]?)*$/,"error":"电话号码填写错误"}
+       "tel":{"vali":/^((0?1[358]\d{9})[,，]?|((0(10|2[0-9]{1}|[3-9]{1}\d{2})[-_－—]?)?\d{7,8})[,，]?)*$/,"error":"电话号码填写错误"},
+       "mobile":{"vali":/^(0?1[358]\d{9})*$/,"error":"手机号码填写错误"},
+        url:["vali":/^(http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*)?$/,"error":"网址填写错误"],
+        number:["vali":/^\d*$/,"error":"只能填写数字格式"],
+        english:["vali":/^[A-Za-z]*$/,"error":"只能输入半角英文字母"],
+        chinese:["vali":/^[\u0391-\uFFE5]*$/,"error":"只能输入全角中文"],
+        username:["vali":/^[a-zA-Z]{1}\w*$/,"error":"帐号需由字母开头的4-20位字母、数字或下划线组成"],
+        password:["vali":/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]*$/,"error":"密码长度4-20,请勿输入特殊字符"],
+        date:["vali":/^((\d{4})[\-|\.|\/](\d{1,2})[\-|\.|\/](\d{1,2}))?$/,"error":"请填写如2012-1-1格式日期！"],
       }
       var va=dataVali[type]
       if(va!==undefined)
         {if(value.search(va.vali)!==-1)
           console.log("input OK");
-          else console.log(va.error)
+          else checkError(va.error)
           }
         
-      
+    }
+    function checkError(error){
+      document.getElementById("theForm").onsubmit=stopDefault();
+      console.log(error);
     }
 </script>
