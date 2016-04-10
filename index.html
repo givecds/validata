@@ -1,8 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
 <title>Validatajs</title>
 <style> 
 body,td{font:12px Verdana;color:#333}
@@ -22,22 +23,20 @@ font-family:"Microsoft YaHei",Verdana,Arial;
 font-size:14px;
 vertical-align:top;
 }
-input[type=text],input[type=password]{height:25px;}
-input[type=text]:focus,input[type=password]:focus,textarea:focus{/*border-color:rgba(82,168,236,0.8);*/border-color:#52a8ec;box-shadow:0 1px 2px rgba(0,0,0,0.1) inset,0 0 5px rgba(82,168,236,0.6);outline:0 none;}
+
 </style>
 </head>
 <body>
 
-<form name="theForm" id="theForm" onsubmit="alert('ss')">
+<form name="theForm" id="theForm" >
  <h2>表单验证示例</h2>
  <table align="center" width="100%">
  <tr>
-  <td>真实姓名：</td><td><input type="text" name="Name" dataType="chinese-[1,]" value="xingming"/><span msgbox="1">请输入真实姓名</span>
-  <span id="vfMsgBox_Name"></span>
+  <td>真实姓名：</td><td><input type="text" name="Name" dataType="chinese-[1,]" value="请输入真实姓名"/>
   </td>
  </tr>
  <tr>
-  <td>英文名：</td><td><input type="text" name="Nick" dataType="english-[1,10]" value="xingming"/></td>
+  <td>英文名：</td><td><input type="text" name="Nick" dataType="english-[1,10]" value="请输入英文名"/></td>
  </tr>
  <tr>
   <td>主页：</td><td><input type="text" name="Homepage" dataType="url" /></td>
@@ -67,13 +66,13 @@ input[type=text]:focus,input[type=password]:focus,textarea:focus{/*border-color:
  </tr>
 
  <tr>
-  <td>电话：</td><td><input type="text" name="Phone" dataType="tel" value="138056245871"/></td>
+  <td>电话：</td><td><input type="text" name="Phone" dataType="tel-[11,11]" value="138056245871"/></td>
  </tr>
  <tr>
   <td>手机：</td><td><input type="text" name="mobile" dataType="mobile" /></td>
  </tr>
  <tr>
-  <td>生日：</td><td><input type="text" name="Birthday" dataType="date-[1980-1-1,2012-5-20]" /></td>
+  <td>生日：</td><td><input type="text" name="Birthday" dataType="date-[1980.1.1,2012.5.20]" /></td>
  </tr>
  <tr>
   <td>自我介绍：</td><td><textarea name="Description" style="width:99%;" dataType="length-[0,150] exec-[testFunction]">中文是一个字</textarea>
@@ -81,98 +80,14 @@ input[type=text]:focus,input[type=password]:focus,textarea:focus{/*border-color:
   </td>
  </tr>
  <tr>
-  <td colspan="2"><input name="Submit" type="submit" value="确定提交" ></td>
+  <td colspan="2"><input name="Submit" type="submit" value="确定提交" onsubmit="alert('ss')"></td>
  </tr>
  </table>
 </form>
 <style type="text/css"> 
-/*输入项样式*/
-input.vf_inCorrect,textarea.vf_inCorrect{box-shadow:0 1px 2px rgba(3,139,0,0.2) inset;border-color:#90b983;color:#2d7c14;}
-input.vf_inError,textarea.vf_inError{box-shadow:0 1px 2px rgba(139,23,0,0.2) inset,0 0 5px rgba(139,23,0,0.6);border-color:#d46060;color:#b40000;}
-.vf_Normal,.vf_Correct,.vf_Error,.vf_Focus{vertical-align:middle;display:inline-block;padding:3px;font-size:12px;margin-left:5px; background:#eee;}
-.vf_Normal{color:#777;}
-.vf_Focus{color:#000;}/*提示*/
-.vf_Correct{color:#20800d;display:none;}/*验证通过*/
-.vf_Error{color:#f00;}/*错误*/
-/*自定义样式*/
-input.inTestClass,textarea.inTestClass{box-shadow:0 0 2px rgba(0,0,0,0.3) inset,0 0 5px rgba(139,23,0,0.6);border-color:#00f;color:#eee;background-color:#333;}
+
 .TestClass_OK{color:#fff;background-color:#080;}
 .TestClass_Err{color:#fff;background-color:#c00;}
 </style>
 <!--验证表单代码-->
-<script>
-
-  //添加事件
-  function addEvent(o,e,fn){
-    if(window.attachEvent){o.attachEvent("on"+e,fn)}
-    else if(window.addEventListener){o.addEventListener(e,fn,false);}
-    else {o["on"+e]=fn;}
-
-  }
-
-
-  //解绑事件
-  function removeEvent(o,e,fn){
-    if(window.detacEvent){o.detacEvent("on"+e,fn);}
-    else if(removeEventListener){o.removeEventListener(e,fn,false);}
-    else {o["on"+e]=null;}
-  }
-    //解除默认事件
-  function stopDefault(e){
-    if(e&&e.preventDefault){e.preventDefault();}
-    else {window.event.returnValue=false}
-    return false;
-  }
-  
-  //阻止冒泡
-  function stopBubble(e){
-    if(e&&e.stopPropagation){e.stopPropagation;}
-    else (window.event.cancelBubble=true)
-  }
-  //选择器
-  function getID(el){
-    return document.getElementById(el);
-  }
-
-  //入口
-  window.onload=function()
-    { 
-      
-      var typeData=document.getElementsByTagName("input");
-      for(var i=0;i<typeData.length;i++)
-        { var type=typeData[i].getAttribute('dataType').split("-",1);
-          var data=typeData[i].value;
-          
-          validataForm(data,type)}
-    }
-    
-
-    function validataForm(value,valitype)
-    { 
-      var dataVali=
-        {"email":{"vali":/^(\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*)?$/,"error":"Email地址填写错误"},
-         "tel":{"vali":/^((0?1[358]\d{9})[,，]?|((0(10|2[0-9]{1}|[3-9]{1}\d{2})[-_－—]?)?\d{7,8})[,，]?)*$/,"error":"电话号码填写错误"},
-          "mobile":{"vali":/^(0?1[358]\d{9})*$/,"error":"手机号码填写错误"},
-         "url":{"vali":/^(http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*)?$/,"error":"网址填写错误"},
-           "number":{"vali":/^\d*$/,"error":"只能填写数字格式"},
-           "english":{"vali":/^[A-Za-z]*$/,"error":"只能输入英文字母"},
-          "chinese":{"vali":/^[\u0391-\uFFE5]*$/,"error":"只能输入中文"},
-          "username":{"vali":/^[a-zA-Z]{1}\w*$/,"error":"帐号需由字母开头的4-20位字母、数字或下划线组成"},
-          "password":{"vali":/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]*$/,"error":"密码长度4-20,请勿输入特殊字符"},
-           "date":{"vali":/^((\d{4})[\-|\.|\/](\d{1,2})[\-|\.|\/](\d{1,2}))?$/,"error":"请填写如2016-1-1格式日期！"}
-        }
-      
-      var va=dataVali[valitype];
-    
-      if(value==""||!va.vali.test(value))
-        checkError(valitype,va.error) 
-       else   
-       console.log("input OK");
-    }
-
-    function checkError(checkType,error){
-      document.getElementById("theForm").onsubmit=stopDefault();
-      console.log(checkType[0]);
-      console.log(error);
-    }
-</script>
+<script type="text/javascript" src="validata.js" ></script>
